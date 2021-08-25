@@ -865,16 +865,18 @@
 <!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<form [formGroup]="form">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
   <p>
     <label>first name</label>
     <input formControlName="firstName" type="text" />
     <span
       *ngIf="
-        form.errors?.firstName?.required &&
+        (form.errors?.firstName?.required || form.errors?.firstName?.invalid) &&
         (firstName?.dirty || firstName?.touched)
       "
-      >{{ form.errors?.firstName?.required }}</span
+      >{{
+        form.errors?.firstName?.required || form.errors?.firstName?.invalid
+      }}</span
     >
   </p>
   <p>
@@ -882,11 +884,13 @@
     <input formControlName="lastName" type="text" />
     <span
       *ngIf="
-        form.errors?.lastName?.required &&
+        (form.errors?.lastName?.required || form.errors?.lastName?.invalid) &&
         (lastName?.dirty || lastName?.touched)
       "
-      >{{ form.errors?.lastName?.required }}</span
+      >{{
+        form.errors?.lastName?.required || form.errors?.lastName?.invalid
+      }}</span
     >
   </p>
-  <button type="submit">submit</button>
+  <button [disabled]="form.invalid" type="submit">submit</button>
 </form>

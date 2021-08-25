@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   AsyncValidatorFn,
@@ -51,6 +52,8 @@ export class AppComponent implements OnInit {
     }
   );
 
+  constructor(private http: HttpClient) {}
+
   ngOnInit() {
     this.form
       .get('firstName')
@@ -63,5 +66,24 @@ export class AppComponent implements OnInit {
 
   get lastName() {
     return this.form.get('lastName');
+  }
+
+  async onSubmit() {
+    const { value } = this.form;
+    const body = { ...value, id: new Date().getTime() };
+
+    const schema = yup.object().test({
+      test: (value, { createError }) => {
+        return this.http
+          .post(`api/users`, value)
+          .toPromise()
+          .then(() => true)
+          .catch((err) => createError({ message: err.body }));
+      },
+    });
+
+    schema.validate(body).catch((err: yup.ValidationError) => {
+      this.form.setErrors(err.message as any);
+    });
   }
 }
